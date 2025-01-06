@@ -1,21 +1,154 @@
-import React from "react";
-import { NavLink } from "react-router-dom";
+import React, { useState, useRef } from "react";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import "remixicon/fonts/remixicon.css";
 
+import LocationSearchPanel from "../components/LocationSearchPanel";
+import VehiclePanel from "../components/VehiclePanel";
+import ConfirmRide from "../components/ConfirmRide";
+import LookingForDriver from "../components/LookingForDriver";
+import WaitingForDriver from "../components/WaitingForDriver";
 const Home = () => {
+  const [pickup, setPickup] = useState("");
+  const [destination, setDestination] = useState("");
+  const [panelOpen, setPanelOpen] = useState(false);
+  const panelRef = useRef(null);
+  const panelCloseRef = useRef(null);
+  const vehiclePanelRef = useRef(null);
+  const confirmRideRef = useRef(null);
+  const lookingForDriverRef = useRef(null);
+  const waitingForDriverRef = useRef(null);
+  const [vehiclePanelOpen, setVehiclePanelOpen] = useState(false);
+  const [confirmRideOpen, setConfirmRideOpen] = useState(false);
+  const [lookingForDriverOpen, setLookingForDriverOpen] = useState(false);
+  const [WaitingForDriverOpen, setWaitingForDriverOpen] = useState(false);
+
+  const submitHandler = (e) => {
+    e.preventDefault();
+  };
+
+  useGSAP(() => {
+    gsap.to(panelRef.current, {
+      height: panelOpen ? "70%" : 0,
+      paddingTop: panelOpen ? 0 : 0,
+      paddingRight: panelOpen ? "1.25rem" : 0,
+      paddingBottom: panelOpen ? "1.25rem" : 0,
+      paddingLeft: panelOpen ? "1.25rem" : 0,
+      duration: 0.5,
+    });
+    gsap.to(panelCloseRef.current, {
+      opacity: panelOpen ? 1 : 0,
+      duration: 0.5,
+    });
+  }, [panelOpen]);
+
+  useGSAP(() => {
+    gsap.to(vehiclePanelRef.current, {
+      transform: vehiclePanelOpen ? "translateY(0)" : "translateY(100%)",
+      duration: 0.5,
+    });
+  }, [vehiclePanelOpen]);
+
+  useGSAP(() => {
+    gsap.to(confirmRideRef.current, {
+      transform: confirmRideOpen ? "translateY(0)" : "translateY(100%)",
+      duration: 0.5,
+    });
+  }, [confirmRideOpen]);
+
+  useGSAP(() => {
+    gsap.to(lookingForDriverRef.current, {
+      transform: lookingForDriverOpen ? "translateY(0)" : "translateY(100%)",
+      duration: 0.5,
+    });
+  }, [lookingForDriverOpen]);
+
+  useGSAP(() => {
+    gsap.to(waitingForDriverRef.current, {
+      transform: WaitingForDriverOpen ? "translateY(0)" : "translateY(100%)",
+      duration: 0.5,
+    });
+  }, [WaitingForDriverOpen]);
+
   return (
-    <div>
-      <div className="h-screen bg-cover bg-center bg-[url(https://images.unsplash.com/photo-1598566665290-e59c95256dc3?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D)] pt-5 w-full flex justify-between flex-col ">
+    <div className="h-screen relative">
+      <img
+        className="w-20 absolute left-5 top-5"
+        src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png"
+        alt=""
+      />
+      <div className="h-screen w-full">
         <img
-          className="w-20 ml-8 filter invert"
-          src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png"
+          className="h-full w-full object-cover"
+          src="https://miro.medium.com/v2/resize:fit:6068/1*4kI1Hl7acOf-BXuK7gZVeQ.png"
           alt=""
         />
-        <div className="bg-white pb-7 py-4 px-4">
-          <h2 className="text-3xl font-bold">Get Started with Uber</h2>
-          <NavLink to={"/login"} className="w-full flex items-center justify-center text-lg bg-black mt-4 text-white py-3 rounded-md">
-            Continue
-          </NavLink>
+      </div>
+
+      <div className="h-screen flex flex-col justify-end absolute top-0 w-full">
+        <div className="h-[30%] bg-white p-5 relative">
+          <h5
+            ref={panelCloseRef}
+            className="absolute top-3 right-2 text-xl opacity-0"
+            onClick={() => setPanelOpen(false)}
+          >
+            <i className="ri-arrow-down-wide-line"></i>
+          </h5>
+          <h4 className="font-semibold text-3xl">Find a trip</h4>
+          <form onSubmit={(e) => submitHandler(e)}>
+            <div className="line absolute h-16 w-1 top-[45%] left-10 bg-[#111] rounded-full"></div>
+            <input
+              onClick={() => setPanelOpen(true)}
+              value={pickup}
+              onChange={(e) => setPickup(e.target.value)}
+              className="bg-[#eee] px-12 py-2 text-lg rounded-lg w-full my-3"
+              type="text"
+              placeholder="Add a pickup location"
+            />
+            <input
+              onClick={() => setPanelOpen(true)}
+              value={destination}
+              onChange={(e) => setDestination(e.target.value)}
+              className="bg-[#eee] px-12 py-2 text-lg rounded-lg w-full"
+              type="text"
+              placeholder="Enter your destination"
+            />
+          </form>
         </div>
+        <div ref={panelRef} className="bg-white h-0 overflow-y-auto">
+          <LocationSearchPanel
+            setVehiclePanelOpen={setVehiclePanelOpen}
+            setPanelOpen={setPanelOpen}
+          />
+        </div>
+      </div>
+      <div>
+        <VehiclePanel
+          vehiclePanelRef={vehiclePanelRef}
+          setVehiclePanelOpen={setVehiclePanelOpen}
+          setConfirmRideOpen={setConfirmRideOpen}
+        />
+      </div>
+      <div>
+        <ConfirmRide
+          confirmRideRef={confirmRideRef}
+          setConfirmRideOpen={setConfirmRideOpen}
+          setLookingForDriverOpen={setLookingForDriverOpen}
+        />
+      </div>
+
+      <div>
+        <LookingForDriver
+          lookingForDriverRef={lookingForDriverRef}
+          setLookingForDriverOpen={setLookingForDriverOpen}
+        />
+      </div>
+
+      <div>
+        <WaitingForDriver 
+        waitingForDriverRef={waitingForDriverRef}
+        setWaitingForDriverOpen={setWaitingForDriverOpen}
+        />
       </div>
     </div>
   );

@@ -1,19 +1,34 @@
-import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
+import React, { useState, useContext } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
+import axios from "axios";
+import {UserDataContext} from "../context/UserContext";
 const UserSignup = () => {
   const [firstname, setFirstname] = useState("");
   const [lastname, setLastname] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [userData, setUserData] = useState({});
-  const submitHandler = (e) => {
+
+  const {user, setUser} = useContext(UserDataContext);
+
+  const navigate = useNavigate();
+  const submitHandler = async (e) => {
     e.preventDefault();
-    setUserData({
+    const newUser = {
       fullname: { firstname: firstname, lastname: lastname },
       email: email,
       password: password,
-    });
-
+    };
+    const response = await axios.post(
+      `${import.meta.env.VITE_BASE_URL}/users/register`,
+      newUser
+    );
+    if (response.status === 201) {
+      const data= response.data;
+      localStorage.setItem("token", data.token);
+      setUser(data.user);
+      navigate("/home");
+    }
     setFirstname("");
     setLastname("");
     setEmail("");
@@ -42,7 +57,6 @@ const UserSignup = () => {
               className="bg-[#eeeeee] mb-7 rounded px-4 py-2 border w-full text-lg placeholder:text-base"
               type="text"
               name=""
-              
               placeholder="First name"
             />
             <input
@@ -53,7 +67,6 @@ const UserSignup = () => {
               className="bg-[#eeeeee] mb-7 rounded px-4 py-2 border w-full text-lg placeholder:text-base"
               type="text"
               name=""
-              
               placeholder="Last name"
             />
           </div>
@@ -66,7 +79,6 @@ const UserSignup = () => {
             className="bg-[#eeeeee] mb-7 rounded px-4 py-2 border w-full text-lg placeholder:text-base"
             type="email"
             name=""
-            
             required
             placeholder="email@example.com"
           />
@@ -79,12 +91,11 @@ const UserSignup = () => {
             }}
             className="bg-[#eeeeee] mb-7 rounded px-4 py-2 border w-full text-lg placeholder:text-base"
             name=""
-            
             required
             placeholder="******"
           />
           <button className="bg-[#111] text-white font-semibold mb-4 rounded px-4 py-2  w-full text-lg placeholder:text-base">
-            Login
+            Create Account
           </button>
           <div className="flex gap-2 items-center justify-center">
             <p className="text-center">Already registered? </p>
