@@ -23,39 +23,43 @@ const ConfirmRide = (props) => {
           <div className="flex items-center gap-5 p-3 border-b-2 border-[#111]">
             <i className="ri-map-pin-line text-lg"></i>
             <div>
-              <h3 className="text-lg font-semibold">
+              {/* <h3 className="text-lg font-semibold">
                 24 B, Near Shopping Complex SCS{" "}
-              </h3>
-              <p className="text-base font-medium text-gray-600">
+              </h3> */}
+              <p className="text-base font-medium ">
                 {" "}
-                Gulberg III, Lahore
+                {props.pickup}
               </p>
             </div>
           </div>
           <div className="flex items-center gap-5 p-3 border-b-2 border-[#111]">
             <i className="text-lg ri-map-pin-fill"></i>
             <div>
-              <h3 className="text-lg font-semibold">
+              {/* <h3 className="text-lg font-semibold">
                 22 Sunrise Avenue, Johar Town{" "}
-              </h3>
-              <p className="text-base font-medium text-gray-600">
+              </h3> */}
+              <p className="text-base font-medium ">
                 {" "}
-                Gulberg III, Lahore
+                {props.destination}
               </p>
             </div>
           </div>
           <div className="flex items-center gap-5 p-3 ">
             <i className="text-lg ri-money-dollar-circle-line"></i>
             <div>
-              <h3 className="text-lg font-semibold">Rs. 156/-</h3>
-              <p className="text-base font-medium text-gray-600"> Cash Cash</p>
+              <h3 className="text-lg font-semibold">Rs. {props.fare[props.vehicleType]}/-</h3>
+              {/* <p className="text-base font-medium text-gray-600"> Cash Cash</p> */}
             </div>
           </div>
         </div>
-        <button onClick={()=>{
-          props.setLookingForDriverOpen(true)
-          props.setConfirmRideOpen(false)
-        }} className="bg-[#111]  text-white font-semibold mb-4 rounded px-4 py-2  w-full text-lg placeholder:text-base">
+        <button
+          onClick={() => {
+            props.setLookingForDriverOpen(true);
+            props.setConfirmRideOpen(false);
+            props.createRide();
+          }}
+          className="bg-[#111]  text-white font-semibold mb-4 rounded px-4 py-2  w-full text-lg placeholder:text-base"
+        >
           Confirm
         </button>
       </div>

@@ -13,7 +13,7 @@ const RidePopup = (props) => {
         <i className="ri-arrow-down-wide-line"></i>
       </h5>
       <h3 className="text-2xl font-semibold mb-5">New Ride Available</h3>
-      <div className="flex items-center justify-between w-full bg-[#eee] p-3 rounded-lg">
+      <div className="flex items-center justify-between w-full bg-[#eee] p-3 rounded">
         <div className="flex items-center gap-3 ">
           <img
             className="h-12 w-12 rounded-full object-cover"
@@ -58,21 +58,21 @@ const RidePopup = (props) => {
             </div>
           </div>
         </div>
-        <div className="w-full">
+        <div className="w-full flex items-center  justify-between ">
+          <button
+            onClick={() => props.setRidePopupPanel(false)}
+            className="bg-red-600 text-white font-semibold rounded px-12 py-2   text-lg "
+          >
+            Ignore
+          </button>
           <button
             onClick={() => {
               props.setRidePopupPanel(false);
               props.setConfirmRidePanel(true);
             }}
-            className="bg-[#111]  text-white font-semibold mb-2 rounded px-4 py-2  w-full text-lg placeholder:text-base"
+            className="bg-[#111]  text-white font-semibold rounded px-12 py-2   text-lg "
           >
             Accept
-          </button>
-          <button
-            onClick={() => props.setRidePopupPanel(false)}
-            className="bg-red-600 text-white font-semibold rounded px-4 py-2  w-full text-lg placeholder:text-base"
-          >
-            Ignore
           </button>
         </div>
       </div>

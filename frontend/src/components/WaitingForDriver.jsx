@@ -2,7 +2,7 @@ import React from "react";
 
 const WaitingForDriver = (props) => {
   return (
-    <div className="fixed z-10 bottom-0 w-full translate-y-full bg-white p-3 py-6">
+    <div ref={props.waitingForDriverRef} className="fixed z-10 bottom-0 w-full translate-y-full bg-white p-3 py-6">
       <h5
         className="p-3 absolute top-0  right-2"
         onClick={() => props.setWaitingForDriverOpen(false)}
