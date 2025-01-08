@@ -1,4 +1,5 @@
 const axios = require("axios");
+const captainModel = require("../models/captain.model");
 
 module.exports.getAddressCoordinate = async (address) => {
   try {
@@ -94,3 +95,33 @@ module.exports.getSuggestions = async (input) => {
     throw error;
   }
 };
+
+module.exports.getCaptainsInTheRadius = async (ltd, lng, radius) => {
+  if (
+    !ltd || !lng || !radius ||
+    ltd < -90 || ltd > 90 ||
+    lng < -180 || lng > 180
+  ) {
+    throw new Error("Invalid latitude, longitude, or radius");
+  }
+
+  try {
+    console.log(ltd, lng, radius)
+    const captains = await captainModel.find({
+      location: {
+        $near: {
+          $geometry: {
+            type: 'Point',
+            coordinates: [lng, ltd] // longitude first, then latitude
+          },
+          $maxDistance: radius * 1000 // Convert km to meters
+        }
+      }
+    });
+
+    return captains;
+  } catch (error) {
+    throw new Error(`Error fetching captains: ${error.message}`);
+  }
+};
+

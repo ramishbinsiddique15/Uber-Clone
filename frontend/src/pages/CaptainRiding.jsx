@@ -3,10 +3,15 @@ import { NavLink } from "react-router-dom";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import FinishRide from "../components/FinishRide";
+import { useLocation } from "react-router-dom";
+import LiveTracking from "../components/LiveTracking";
 
 const CaptainRiding = () => {
   const finishRideRef = useRef(null);
   const [finishRide, setFinishRide] = useState(false);
+
+  const location = useLocation();
+  const rideData = location.state?.ride;
   useGSAP(() => {
     gsap.to(finishRideRef.current, {
       transform: finishRide ? "translateY(0)" : "translateY(100%)",
@@ -29,11 +34,7 @@ const CaptainRiding = () => {
         </NavLink>
       </div>
       <div className="h-4/5">
-        <img
-          className="h-full w-full object-cover"
-          src="https://miro.medium.com/v2/resize:fit:6068/1*4kI1Hl7acOf-BXuK7gZVeQ.png"
-          alt=""
-        />
+        <LiveTracking/>
       </div>
       <div
         className="h-1/5 p-4 relative flex items-center justify-between"
@@ -52,6 +53,7 @@ const CaptainRiding = () => {
       </div>
       <div>
         <FinishRide
+          rideData={rideData}
           finishRideRef={finishRideRef}
           setFinishRide={setFinishRide}
         />

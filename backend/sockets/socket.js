@@ -31,15 +31,40 @@ const InitializeSocket = (server) => {
       }
     });
 
+    socket.on("update-location-captain", async (data) => {
+      try {
+        const { userId, location } = data;
+    
+        // Ensure the required fields are present
+        if (!location || !location.coordinates || location.coordinates.length !== 2) {
+          return socket.emit("error", { message: "Invalid location data" });
+        }
+    
+        // Update the user's location in the database
+        await captainModel.findByIdAndUpdate(
+          userId,
+          { location }, // Update location directly
+          { new: true }  // Return the updated document
+        );
+    
+        // Optionally emit success to the client
+        socket.emit("location-updated", { message: "Location updated successfully" });
+      } catch (error) {
+        console.error("Error updating location:", error);
+        socket.emit("error", { message: "Failed to update location" });
+      }
+    });
+    
+
     socket.on("disconnect", () => {
       console.log(`Client disconnected: ${socket.id}`);
     });
   });
 };
 
-const SendMessageToSocketId = (socketId, event, message) => {
+const SendMessageToSocketId = (socketId,  messageObject) => {
   if (io) {
-    io.to(socketId).emit(event, message);
+    io.to(socketId).emit(messageObject.event, messageObject.data);
   } else {
     console.log("socket.io is not initialized");
   }

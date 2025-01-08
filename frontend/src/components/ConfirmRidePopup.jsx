@@ -1,12 +1,32 @@
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
-
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 const ConfirmRidePopup = (props) => {
-  const [otp, setOtp] = useState('')
-  const submitHandler = (e) => {
+  const [otp, setOtp] = useState("");
+  const navigate = useNavigate();
+  const submitHandler = async (e) => {
     e.preventDefault();
-    
+
+    const response = await axios.get(
+      `${import.meta.env.VITE_BASE_URL}/rides/start-ride`,
+      {
+        params: {
+          rideId: props.ride._id,
+          otp: otp,
+        },
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+
+    if (response.status === 200) {
+      props.setConfirmRidePanel(false);
+      navigate("/captain-riding", { state: { ride: props.ride } });
+    }
   };
+
   return (
     <div
       ref={props.confirmRideRef}
@@ -28,7 +48,10 @@ const ConfirmRidePopup = (props) => {
             src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQHjUiEsl2poMRjLwrb3SvehTjx1BXqCf91Q&s"
             alt=""
           />
-          <h2 className="text-lg font-medium">Baig Dogesh</h2>
+          <h2 className="text-lg font-medium capitalize">
+            {props.ride?.user.fullname.firstname}{" "}
+            {props.ride?.user.fullname.lastname}
+          </h2>
         </div>
         <h5 className="text-xl font-semibold">2.2 KM</h5>
       </div>
@@ -37,32 +60,31 @@ const ConfirmRidePopup = (props) => {
           <div className="flex items-center gap-5 p-3 border-b-2 border-[#111]">
             <i className="ri-map-pin-line text-lg"></i>
             <div>
-              <h3 className="text-lg font-semibold">
+              {/* <h3 className="text-lg font-semibold">
                 24 B, Near Shopping Complex SCS{" "}
-              </h3>
-              <p className="text-base font-medium text-gray-600">
-                {" "}
-                Gulberg III, Lahore
-              </p>
+              </h3> */}
+              <p className="text-base font-medium "> {props.ride?.pickup}</p>
             </div>
           </div>
           <div className="flex items-center gap-5 p-3 border-b-2 border-[#111]">
             <i className="text-lg ri-map-pin-fill"></i>
             <div>
-              <h3 className="text-lg font-semibold">
+              {/* <h3 className="text-lg font-semibold">
                 22 Sunrise Avenue, Johar Town{" "}
-              </h3>
-              <p className="text-base font-medium text-gray-600">
+              </h3> */}
+              <p className="text-base font-medium ">
                 {" "}
-                Gulberg III, Lahore
+                {props.ride?.destination}
               </p>
             </div>
           </div>
           <div className="flex items-center gap-5 p-3 ">
             <i className="text-lg ri-money-dollar-circle-line"></i>
             <div>
-              <h3 className="text-lg font-semibold">Rs. 156/-</h3>
-              <p className="text-base font-medium text-gray-600"> Cash Cash</p>
+              <h3 className="text-lg font-semibold">
+                Rs. {props.ride?.fare}/-
+              </h3>
+              {/* <p className="text-base font-medium text-gray-600"> Cash Cash</p> */}
             </div>
           </div>
         </div>
@@ -82,13 +104,9 @@ const ConfirmRidePopup = (props) => {
             className="text-center font-mono bg-[#eee] w-full p-3 rounded border-none"
           />
           <div className="w-full mt-5">
-            <NavLink
-              to={"/captain-riding"}
-              onClick={() => props.setConfirmRidePanel(false)}
-              className="bg-[#111] flex items-center justify-center  text-white font-semibold mb-2 rounded px-4 py-2  w-full text-lg "
-            >
+            <button className="bg-[#111] flex items-center justify-center  text-white font-semibold mb-2 rounded px-4 py-2  w-full text-lg ">
               Confirm
-            </NavLink>
+            </button>
             <button
               onClick={() => props.setConfirmRidePanel(false)}
               className="bg-red-600 text-white font-semibold rounded px-4 py-2  w-full text-lg placeholder:text-base"

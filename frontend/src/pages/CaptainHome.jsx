@@ -7,10 +7,13 @@ import gsap from "gsap";
 import ConfirmRidePopup from "../components/ConfirmRidePopup";
 import { SocketContext } from "../context/SocketContext";
 import { CaptainDataContext } from "../context/CaptainContext";
+import axios from "axios";
+import LiveTracking from "../components/LiveTracking";
 
 const CaptainHome = () => {
-  const [ridePopupPanel, setRidePopupPanel] = useState(true);
+  const [ridePopupPanel, setRidePopupPanel] = useState(false);
   const [confirmRidePanel, setConfirmRidePanel] = useState(false);
+  const [ride, setRide] = useState(null);
   const ridePopupRef = useRef(null);
   const confirmRideRef = useRef(null);
 
@@ -21,7 +24,51 @@ const CaptainHome = () => {
     if (socket) {
       socket.emit("join", { userType: "captain", userId: captain._id });
     }
+
+    const updateLocation = () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((position) => {
+          // console.log(position.coords.latitude, position.coords.longitude, captain._id);
+          socket.emit("update-location-captain", {
+            userId: captain._id,
+            location: {
+              type: "Point",
+              coordinates: [
+                position.coords.longitude, // longitude first!
+                position.coords.latitude,
+              ],
+            },
+          });
+        });
+      } else {
+        console.log("Geolocation is not supported by this browser.");
+      }
+    };
+
+    const locationInterval = setInterval(updateLocation, 10000);
+    updateLocation();
+    // return ()=> clearInterval(locationInterval);
   }, [captain, socket]);
+
+  socket.on("new-ride", (data) => {
+    console.log("new-ride", data);
+    setRide(data);
+    setRidePopupPanel(true);
+    console.log(ride);
+  });
+
+  const confirmRide = async () => {
+    const response = await axios.post(
+      `${import.meta.env.VITE_BASE_URL}/rides/confirm`,
+      { rideId: ride._id, captainId: captain._id },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+  console.log(response.data);
+  };
 
   useGSAP(() => {
     gsap.to(ridePopupRef.current, {
@@ -52,11 +99,7 @@ const CaptainHome = () => {
         </NavLink>
       </div>
       <div className="h-3/5">
-        <img
-          className="h-full w-full object-cover"
-          src="https://miro.medium.com/v2/resize:fit:6068/1*4kI1Hl7acOf-BXuK7gZVeQ.png"
-          alt=""
-        />
+        <LiveTracking/>
       </div>
       <div className="h-2/5 p-4">
         <CaptainDetails />
@@ -64,16 +107,19 @@ const CaptainHome = () => {
 
       <div>
         <RidePopup
+          ride={ride}
           ridePopupRef={ridePopupRef}
           setRidePopupPanel={setRidePopupPanel}
           setConfirmRidePanel={setConfirmRidePanel}
+          confirmRide={confirmRide}
         />
       </div>
 
       <div>
-        <ConfirmRidePopup 
-        confirmRideRef={confirmRideRef}
-        setConfirmRidePanel={setConfirmRidePanel}  
+        <ConfirmRidePopup
+        ride={ride}
+          confirmRideRef={confirmRideRef}
+          setConfirmRidePanel={setConfirmRidePanel}
         />
       </div>
     </div>

@@ -11,6 +11,7 @@ import WaitingForDriver from "../components/WaitingForDriver";
 import { useNavigate } from "react-router-dom";
 import { SocketContext } from "../context/SocketContext";
 import { UserDataContext } from "../context/UserContext";
+import LiveTracking from "../components/LiveTracking";
 
 const Home = () => {
   const [pickup, setPickup] = useState("");
@@ -42,6 +43,33 @@ const Home = () => {
           socket.emit("join", { userType: "user", userId: user._id });
       }
   }, [user, socket]);
+
+  useEffect(() => {
+    if (socket) {
+      socket.on("ride-confirmed", ride => {
+        setRide(ride);
+        setLookingForDriverOpen(false);
+        setWaitingForDriverOpen(true);
+      });
+
+      return () => {
+        socket.off("ride-confirmed");
+      };
+    }
+  }, [socket]);
+
+  useEffect(() => {
+    if (socket) {
+      socket.on("ride-started", ride => {
+        setWaitingForDriverOpen(false);
+        navigate("/riding", { state: { ride: ride } });
+      });
+
+      return () => {
+        socket.off("ride-started");
+      };
+    }
+  }, [socket]);
 
   const handlePickupChange = async (e) => {
     setPickup(e.target.value);
@@ -215,11 +243,8 @@ const Home = () => {
       />
       <div className="h-screen w-screen">
         {/* image for temporary use  */}{" "}
-        <img
-          className="h-full w-full object-cover"
-          src="https://miro.medium.com/v2/resize:fit:6068/1*4kI1Hl7acOf-BXuK7gZVeQ.png"
-          alt=""
-        />
+        {/* <LiveTracking/> */}
+        <LiveTracking/>
       </div>
       <div className=" flex flex-col justify-end h-screen absolute top-0 w-full">
         <div className="h-[30%] p-6 bg-white relative">

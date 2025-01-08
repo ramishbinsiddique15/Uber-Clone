@@ -1,7 +1,27 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const FinishRide = (props) => {
+  const navigate = useNavigate();
+  const endRide = async () => {
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/rides/end-ride`,
+        { rideId: props.rideData._id },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      if (response.status === 200) {
+        navigate("/captain-home");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
   return (
     <div
       ref={props.finishRideRef}
@@ -13,9 +33,7 @@ const FinishRide = (props) => {
       >
         <i className="ri-arrow-down-wide-line"></i>
       </h5>
-      <h3 className="text-2xl font-semibold mb-5">
-        Finish Ride!
-      </h3>
+      <h3 className="text-2xl font-semibold mb-5">Finish Ride!</h3>
       <div className="flex items-center justify-between w-full bg-[#eee] p-3 rounded">
         <div className="flex items-center gap-3 ">
           <img
@@ -23,7 +41,9 @@ const FinishRide = (props) => {
             src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQHjUiEsl2poMRjLwrb3SvehTjx1BXqCf91Q&s"
             alt=""
           />
-          <h2 className="text-lg font-medium">Baig Dogesh</h2>
+          <h2 className="text-lg font-medium">
+            {props.rideData?.user.fullname.firstname}
+          </h2>
         </div>
         <h5 className="text-xl font-semibold">2.2 KM</h5>
       </div>
@@ -32,45 +52,48 @@ const FinishRide = (props) => {
           <div className="flex items-center gap-5 p-3 border-b-2 border-[#111]">
             <i className="ri-map-pin-line text-lg"></i>
             <div>
-              <h3 className="text-lg font-semibold">
+              {/* <h3 className="text-lg font-semibold">
                 24 B, Near Shopping Complex SCS{" "}
-              </h3>
-              <p className="text-base font-medium text-gray-600">
+              </h3> */}
+              <p className="text-base font-medium ">
                 {" "}
-                Gulberg III, Lahore
+                {props.rideData?.destination}
               </p>
             </div>
           </div>
           <div className="flex items-center gap-5 p-3 border-b-2 border-[#111]">
             <i className="text-lg ri-map-pin-fill"></i>
             <div>
-              <h3 className="text-lg font-semibold">
+              {/* <h3 className="text-lg font-semibold">
                 22 Sunrise Avenue, Johar Town{" "}
-              </h3>
-              <p className="text-base font-medium text-gray-600">
+              </h3> */}
+              <p className="text-base font-medium ">
                 {" "}
-                Gulberg III, Lahore
+                {props.rideData?.destination}
               </p>
             </div>
           </div>
           <div className="flex items-center gap-5 p-3 ">
             <i className="text-lg ri-money-dollar-circle-line"></i>
             <div>
-              <h3 className="text-lg font-semibold">Rs. 156/-</h3>
-              <p className="text-base font-medium text-gray-600"> Cash Cash</p>
+              <h3 className="text-lg font-semibold">
+                Rs. {props.rideData?.fare}/-
+              </h3>
+              {/* <p className="text-base font-medium text-gray-600"> Cash Cash</p> */}
             </div>
           </div>
         </div>
-          <div className="w-full mt-5">
-            <NavLink
-              to={"/captain-home"}
-              className="bg-[#111] flex items-center justify-center  text-white font-semibold mb-2 rounded px-4 py-2  w-full text-lg "
-            >
-              Finish Ride
-            </NavLink>
-            <p className="text-xs">click on finish ride if you  have completed the payment</p>
-          </div>
-        
+        <div className="w-full mt-5">
+          <button
+            onClick={endRide}
+            className="bg-[#111] flex items-center justify-center  text-white font-semibold mb-2 rounded px-4 py-2  w-full text-lg "
+          >
+            Finish Ride
+          </button>
+          <p className="text-xs">
+            click on finish ride if you have completed the payment
+          </p>
+        </div>
       </div>
     </div>
   );

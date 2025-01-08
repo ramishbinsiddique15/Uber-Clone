@@ -20,7 +20,10 @@ const RidePopup = (props) => {
             src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQHjUiEsl2poMRjLwrb3SvehTjx1BXqCf91Q&s"
             alt=""
           />
-          <h2 className="text-lg font-medium">Baig Dogesh</h2>
+          <h2 className="text-lg font-medium">
+            {props.ride?.user.fullname.firstname}{" "}
+            {props.ride?.user.fullname.lastname}
+          </h2>
         </div>
         <h5 className="text-xl font-semibold">2.2 KM</h5>
       </div>
@@ -29,32 +32,29 @@ const RidePopup = (props) => {
           <div className="flex items-center gap-5 p-3 border-b-2 border-[#111]">
             <i className="ri-map-pin-line text-lg"></i>
             <div>
-              <h3 className="text-lg font-semibold">
+              {/* <h3 className="text-lg font-semibold">
                 24 B, Near Shopping Complex SCS{" "}
-              </h3>
-              <p className="text-base font-medium text-gray-600">
-                {" "}
-                Gulberg III, Lahore
-              </p>
+              </h3> */}
+              <p className="text-base font-medium "> {props.ride?.pickup}</p>
             </div>
           </div>
           <div className="flex items-center gap-5 p-3 border-b-2 border-[#111]">
             <i className="text-lg ri-map-pin-fill"></i>
             <div>
-              <h3 className="text-lg font-semibold">
+              {/* <h3 className="text-lg font-semibold">
                 22 Sunrise Avenue, Johar Town{" "}
-              </h3>
-              <p className="text-base font-medium text-gray-600">
+              </h3> */}
+              <p className="text-base font-medium ">
                 {" "}
-                Gulberg III, Lahore
+                {props.ride?.destination}
               </p>
             </div>
           </div>
           <div className="flex items-center gap-5 p-3 ">
             <i className="text-lg ri-money-dollar-circle-line"></i>
             <div>
-              <h3 className="text-lg font-semibold">Rs. 156/-</h3>
-              <p className="text-base font-medium text-gray-600"> Cash Cash</p>
+              <h3 className="text-lg font-semibold">Rs. {props.ride?.fare}/-</h3>
+              {/* <p className="text-base font-medium text-gray-600"> Cash Cash</p> */}
             </div>
           </div>
         </div>
@@ -67,6 +67,7 @@ const RidePopup = (props) => {
           </button>
           <button
             onClick={() => {
+              props.confirmRide()
               props.setRidePopupPanel(false);
               props.setConfirmRidePanel(true);
             }}

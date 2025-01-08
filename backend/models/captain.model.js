@@ -30,7 +30,6 @@ const captainSchema = new mongoose.Schema({
   socketId: {
     type: String,
   },
-
   status: {
     type: String,
     enum: ["active", "inactive"],
@@ -59,12 +58,11 @@ const captainSchema = new mongoose.Schema({
     },
   },
   location: {
-    lat: {
-      type: Number,
+    type: {
+      type: String,
+      enum: ["Point"],
     },
-    lng: {
-      type: Number,
-    },
+    coordinates: [Number],
   },
 });
 
@@ -75,13 +73,17 @@ captainSchema.methods.generateAuthToken = function () {
   return token;
 };
 
-captainSchema.methods.comparePassword = async function(password){
-    return await bcrypt.compare(password, this.password);
-}
+captainSchema.methods.comparePassword = async function (password) {
+  return await bcrypt.compare(password, this.password);
+};
 
-captainSchema.statics.hashPassword = async function(password){
-    return await bcrypt.hash(password, 10);
-}
+captainSchema.statics.hashPassword = async function (password) {
+  return await bcrypt.hash(password, 10);
+};
+
+captainSchema.index({ location: "2dsphere" });
+
+
 
 const CaptainModel = mongoose.model("captain", captainSchema);
 module.exports = CaptainModel;
